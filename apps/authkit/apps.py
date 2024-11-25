@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class BaggageConfig(AppConfig):
+class AuthkitConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'baggage'
+    name = 'apps.authkit'
