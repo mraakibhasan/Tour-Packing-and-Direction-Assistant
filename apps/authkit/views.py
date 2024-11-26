@@ -6,8 +6,10 @@ from rest_framework.permissions import AllowAny
 from django.conf import settings
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
+from rest_framework.permissions import IsAuthenticated
 from apps.base.base_response import base_success_response, base_error_response
 from apps.authkit.serializers import *
+from apps.authkit.authentication import CookieJWTAuthentication
 
 
 #====== Registration API ======#
@@ -228,3 +230,26 @@ class LogoutView(APIView):
         )
 
         return response
+
+#====== User Get API ======#
+class UserView(APIView):
+    authentication_classes = [CookieJWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        try:
+            user = request.user
+            data = {
+                'user_id': user.id,
+                'username': user.username,
+                'email': user.email
+            }
+            return Response(
+                base_success_response('User details fetched successfully.', data),
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(
+                base_error_response('User details fetch failed.', str(e)),
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
