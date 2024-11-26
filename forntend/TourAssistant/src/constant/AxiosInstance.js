@@ -1,7 +1,11 @@
-import axios from "axios"
-import axos from "axios"
+import axios from "axios";
 
+const axiosInstance = axios.create({
+    baseURL: import.meta.env.VITE_BASEAPIURL,  
+    headers: {
+        "Content-Type": "application/json"
+    },
+    withCredentials: true
+});
 
-const  axiosInstance =  axios.create({
-    baseURL: "" // APi base url will be here
-})
+export default axiosInstance;
