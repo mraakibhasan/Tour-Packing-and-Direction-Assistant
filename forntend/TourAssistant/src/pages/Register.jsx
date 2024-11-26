@@ -3,8 +3,15 @@ import registerImage from "../assets/register.svg";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Use useNavigate for redirecting
+import { useMutation } from "@tanstack/react-query";
+import axiosInstance from "../constant/AxiosInstance";
+import { toast } from "react-toastify";
+import { TailSpin } from "react-loader-spinner";
+
 const Register = () => {
+  const navigate = useNavigate(); // useNavigate hook to navigate
+
   // Validation Schema
   const resgisterSchema = Yup.object().shape({
     username: Yup.string().required("Please provide a valid username"),
@@ -14,6 +21,46 @@ const Register = () => {
     password: Yup.string()
       .required("Password is required")
       .min(6, "Password must be at least 6 characters long"),
+  });
+
+  // Registration mutation
+  const { mutate, isPending, isError } = useMutation({
+    mutationFn: async (regdata) => {
+      try {
+        console.log("reg data" ,regdata)
+        const { data } = await axiosInstance.post("/register", regdata);
+        return data;
+      } catch (error) {
+        throw new Error("Something went wrong");
+      }
+    },
+    onSuccess: (response) => {
+      console.log(response);
+      toast.success(response?.message, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+      navigate("/"); // Redirect on success using navigate hook
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error(error.message || "An error occurred. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    },
   });
 
   return (
@@ -32,7 +79,7 @@ const Register = () => {
       >
         <img
           src={registerImage}
-          alt="Login"
+          alt="Register"
           className="w-3/4 h-auto drop-shadow-lg"
         />
       </motion.div>
@@ -44,17 +91,21 @@ const Register = () => {
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 1 }}
       >
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">Hello Travelars </h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">Hello Travelers</h1>
         <p className="text-gray-600 mb-8">
-          Log in to your account and continue exploring the platform!
+          Create an account to start exploring the platform!
         </p>
 
         <Formik
           initialValues={{ username: "", email: "", password: "" }}
           validationSchema={resgisterSchema}
-          onSubmit={(values) => {
-            console.log("Login Data:", values);
-            // Handle login logic here (e.g., send data to API)
+          onSubmit={(values, { resetForm }) => {
+            console.log("Register Data:", values);
+            mutate(values, {
+              onSuccess: () => {
+                resetForm();
+              },
+            });
           }}
         >
           {({
@@ -90,7 +141,7 @@ const Register = () => {
                 )}
               </div>
 
-              {/* Eamil Feild */}
+              {/* Email Field */}
               <div className="w-full">
                 <input
                   type="text"
@@ -99,7 +150,7 @@ const Register = () => {
                   value={values.email}
                   placeholder="Enter your email..."
                   className={`w-full px-4 py-3 border rounded-lg focus:outline-none ${
-                    errors.username && touched.username
+                    errors.email && touched.email
                       ? "border-red-500"
                       : "border-gray-300"
                   }`}
@@ -135,17 +186,27 @@ const Register = () => {
               {/* Submit Button */}
               <motion.button
                 type="submit"
-                className="w-1/2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+                className="w-1/2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 hover:shadow-lg transform hover:scale-105 transition-all duration-300 flex justify-center items-center"
+               
               >
-                Log In
+                {isPending ? (
+                  <TailSpin
+                    height="22"
+                    width="22"
+                    color="#fff"
+                    ariaLabel="loading"
+                  />
+                ) : (
+                  "Sign Up"
+                )}
               </motion.button>
             </form>
           )}
         </Formik>
 
         <p className="mt-2 text-sm">
-         Already have an accoubt{" "}
-          <Link className="text-blue-600 font-semibold" to="/">Sign In</Link>{" "}
+          Already have an account?{" "}
+          <Link className="text-blue-600 font-semibold" to="/">Sign In</Link>
         </p>
       </motion.div>
     </motion.div>
