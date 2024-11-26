@@ -1,11 +1,15 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import OnBoarded from "./onBoarded";
+
 import LoginScreen from "./pages/Login";
 import Register from "./pages/Register";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 function App() {
 
 
   return (
+    <>
+    <ToastContainer/>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginScreen/>} />
@@ -13,6 +17,7 @@ function App() {
       </Routes>
 
     </BrowserRouter>
+    </>
   )
 }
 

@@ -1,5 +1,5 @@
 import React from "react";
-import loginImage from "../../public/onboard.svg";
+import registerImage from "../assets/register.svg";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { motion } from "framer-motion";
@@ -31,7 +31,7 @@ const Register = () => {
         transition={{ duration: 1 }}
       >
         <img
-          src={loginImage}
+          src={registerImage}
           alt="Login"
           className="w-3/4 h-auto drop-shadow-lg"
         />
