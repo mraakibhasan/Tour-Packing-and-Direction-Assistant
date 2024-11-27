@@ -1,6 +1,6 @@
 import React from 'react';
-import bannerImg from './../../assets/banner-pic.png'
-import cloud from './../../assets/pink-cloud.webp'
+import bannerImg from '../../../assets/banner-pic.png' //
+import cloud from '../../../assets/pink-cloud.webp' //
 
 const Banner = () => {
     return (
