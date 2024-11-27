@@ -119,11 +119,10 @@ const LoginScreen = () => {
                   onBlur={handleBlur("username")}
                   value={values.username}
                   placeholder="Enter your username..."
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none ${
-                    errors.username && touched.username
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none ${errors.username && touched.username
                       ? "border-red-500"
                       : "border-gray-300"
-                  }`}
+                    }`}
                 />
                 {errors.username && touched.username && (
                   <p className="text-red-500 text-sm mt-2 text-start">
@@ -140,11 +139,10 @@ const LoginScreen = () => {
                   onBlur={handleBlur("password")}
                   value={values.password}
                   placeholder="Enter your password..."
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none ${
-                    errors.password && touched.password
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none ${errors.password && touched.password
                       ? "border-red-500"
                       : "border-gray-300"
-                  }`}
+                    }`}
                 />
                 {errors.password && touched.password && (
                   <p className="text-red-500 text-sm mt-2 text-start">
