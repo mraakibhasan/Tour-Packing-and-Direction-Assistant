@@ -1,107 +1,166 @@
-# Tour Packing and Direction Assistant
+### Documentation: Fractional Knapsack API
 
-Welcome to the **Tour Packing and Direction Assistant**! This web application is designed to help users efficiently pack for their travels and find the shortest path to their destination. The platform leverages **Greedy Algorithm** and **0/1 Knapsack Problem** to optimize packing and travel planning.
-
----
-
-## Table of Contents
-- [Features](#features)
-  - [Packing Assistant](#1-packing-assistant)
-  - [Shortest Path Suggestion](#2-shortest-path-suggestion)
-- [Technologies Used](#technologies-used)
-- [Algorithms Used](#algorithms-used)
-  - [Greedy Algorithm](#greedy-algorithm)
-  - [0/1 Knapsack Problem](#01-knapsack-problem)
-- [Setup Instructions](#setup-instructions)
-- [Future Enhancements](#future-enhancements)
-- [License](#license)
+#### Overview
+The Fractional Knapsack API is designed to maximize the total value of selected chocolates from the database based on their value-to-weight ratio, ensuring the best combination fits within a given weight capacity. The algorithm allows partial selections when necessary to optimize the result.
 
 ---
 
-## Features
+#### Knapsack API Details
+- **Endpoint**: `POST /api/v1/chocolate/create`
+- **Purpose**: Retrieve the optimal selection of chocolates given a specific capacity and a list of chocolate IDs.
 
-### **1. Packing Assistant**
-- **Bag Customization**:
-  - Upload a bag image and specify its weight capacity.
-- **Item Input**:
-  - Enter items with attributes such as weight and cost.
-- **Optimal Packing Suggestion**:
-  - The assistant uses the **0/1 Knapsack Problem** to calculate the best packing strategy.
-  - Balances weight and cost to maximize user-defined revenue.
-- **Output**:
-  - A visual representation of the packed bag.
-  - Tabular summary displaying:
-    - Item Name
-    - Weight
-    - Cost
-    - Revenue-to-weight ratio.
+##### Request Body
+```json
+{
+    "capacity": 150,
+    "chocolates": [1, 2, 3, 4, 5]
+}
+```
+- `capacity`: The total weight capacity of the knapsack.
+- `chocolates`: List of chocolate IDs to consider for selection.
 
-### **2. Shortest Path Suggestion**
-- **Searchable Dropdown**:
-  - Choose starting point and destination.
-- **Shortest Route Recommendation**:
-  - Uses a predefined graph to compute the shortest path.
-  - Displays:
-    - Destination
-    - Estimated travel time
-    - Recommendation type (Suggested, Custom, No Suggestion).
-- **Optional Navigation**:
-  - Easily switch to the Packing Assistant from this section.
-
----
-
-## Technologies Used
-- **Frontend**: HTML5, CSS3, JavaScript
-- **Backend**: Node.js, Python
-- **Algorithm**: 0/1 Knapsack Problem, Greedy Algorithm
-- **Graph Representation**: Predefined adjacency list for shortest path calculation.
-
----
-
-## Algorithms Used
-
-### **Greedy Algorithm**
-- Applied in the shortest path computation.
-- Ensures that the most efficient route is selected based on travel time.
-
-### **0/1 Knapsack Problem**
-- Used in the Packing Assistant to optimize item selection based on:
-  - Maximum weight capacity.
-  - Best cost-to-weight ratio.
-- Implements a dynamic programming approach for precise optimization.
-
----
-
-## Setup Instructions
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/your-username/tour-packing-assistant.git
-   cd tour-packing-assistant
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-3. **Run the application**:
-   ```bash
-   npm start
-   ```
-
-4. **Access the application**:
-   - Open your browser and go to `http://localhost:3000`.
+##### Example Response
+```json
+{
+    "status": "success",
+    "message": "Chocolate retrieved successfully",
+    "data": {
+        "max_value": 295.0,
+        "selected_items": [
+            {
+                "chocolate": {
+                    "id": 4,
+                    "order": 4,
+                    "name": "Chocolate Truffles",
+                    "weight": 60.0,
+                    "value": 150.0,
+                    "ratio": 2.5,
+                    "image": "http://127.0.0.1:8000/media/chocolate/ctuffle.webp"
+                },
+                "weight": 60.0,
+                "value": 150.0
+            },
+            {
+                "chocolate": {
+                    "id": 1,
+                    "order": 1,
+                    "name": "Dark Chocolate",
+                    "weight": 50.0,
+                    "value": 85.0,
+                    "ratio": 1.7,
+                    "image": "http://127.0.0.1:8000/media/chocolate/dark.webp"
+                },
+                "weight": 50.0,
+                "value": 85.0
+            },
+            {
+                "chocolate": {
+                    "id": 5,
+                    "order": 5,
+                    "name": "Hazelnut Chocolate",
+                    "weight": 80.0,
+                    "value": 120.0,
+                    "ratio": 1.5,
+                    "image": "http://127.0.0.1:8000/media/chocolate/hazelnut.webp"
+                },
+                "weight": 40.0,
+                "value": 60.0
+            }
+        ]
+    }
+}
+```
 
 ---
 
-## Future Enhancements
-- Integrate real-time traffic data for dynamic route suggestions.
-- Allow collaborative packing for group tours.
-- Add multi-language support.
+#### Algorithm Details
+
+##### Step 1: Input Analysis
+The input includes:
+- **Capacity**: Maximum weight the knapsack can carry.
+- **Chocolates**: Each chocolate has:
+  - `weight`
+  - `value`
+  - **Value-to-weight ratio** (calculated as `value / weight`).
+
+##### Step 2: Sorting by Ratio
+The algorithm sorts chocolates in descending order of their value-to-weight ratio to prioritize items that provide the most value per unit weight.
+
+##### Step 3: Selecting Chocolates
+1. Start with the chocolate with the highest ratio.
+2. Add it fully if the remaining capacity allows.
+3. If not, add a fractional amount to fill the remaining capacity.
+4. Repeat until the capacity is exhausted.
+
+##### Example Calculation
+For input:
+```json
+{
+    "capacity": 150,
+    "chocolates": [1, 2, 3, 4, 5]
+}
+```
+**Chocolates Details**:
+```
+ID | Name                  | Weight | Value | Ratio
+---------------------------------------------------
+ 4 | Chocolate Truffles    |   60   |  150  |  2.5
+ 1 | Dark Chocolate        |   50   |   85  |  1.7
+ 5 | Hazelnut Chocolate    |   80   |  120  |  1.5
+ 2 | Milk Chocolate        |  100   |   75  |  0.75
+ 3 | White Chocolate       |  125   |   40  |  0.32
+```
+
+**Execution Steps**:
+1. Add **Chocolate Truffles** (ID: 4): Full weight `60`, value `150`.
+   - Remaining capacity: `150 - 60 = 90`
+2. Add **Dark Chocolate** (ID: 1): Full weight `50`, value `85`.
+   - Remaining capacity: `90 - 50 = 40`
+3. Add Fractional **Hazelnut Chocolate** (ID: 5): Weight `40`, value \( \frac{40}{80} \times 120 = 60 \).
+   - Remaining capacity: `0`.
+
+**Total Value**: \( 150 + 85 + 60 = 295 \).
+
+**Selected Chocolates**:
+1. Chocolate Truffles: Full.
+2. Dark Chocolate: Full.
+3. Hazelnut Chocolate: Partial.
 
 ---
 
-## License
-This project is licensed under the [MIT License](LICENSE).
+#### Additional Features
+1. **Error Handling**:
+   - Invalid capacity (negative or zero).
+   - Non-integer or empty chocolate IDs.
+   - Missing or invalid chocolates.
+2. **Serialization**:
+   - Selected chocolates include full metadata (ID, name, weight, value, ratio, image).
 
 ---
+
+#### Chocolatelist API
+- **Endpoint**: `GET /api/v1/chocolate-list`
+- **Purpose**: Retrieve all available chocolates from the database.
+- **Response**:
+```json
+{
+    "status": "success",
+    "message": "Chocolates retrieved successfully",
+    "data": [
+        {
+            "id": 1,
+            "name": "Dark Chocolate",
+            "weight": 50.0,
+            "value": 85.0,
+            "ratio": 1.7,
+            "image": "http://127.0.0.1:8000/media/chocolate/dark.webp"
+        },
+        ...
+    ]
+}
+```
+
+---
+
+#### Conclusion
+The Fractional Knapsack API optimally selects chocolates based on their value-to-weight ratio, providing an efficient and detailed response. It includes full chocolate metadata and supports fractional selections to maximize value within the provided capacity.

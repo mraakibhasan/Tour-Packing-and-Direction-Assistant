@@ -1,57 +1,128 @@
-from django.shortcuts import render
+from typing import List, Tuple
+from django.http import JsonResponse
 from rest_framework.views import APIView
-from rest_framework import status
 from rest_framework.response import Response
-from apps.baggage.utils import knapsack
+from rest_framework import status
+from django.core.exceptions import ObjectDoesNotExist
+from .models import Chocolates
+from .serializers import ChocolatesSerializer
 from apps.base.base_response import base_success_response, base_error_response
 
+class KnapsackAPIView(APIView):
+    """
+    API view to solve the fractional knapsack problem using Chocolates from the database.
+    Expects a JSON payload with capacity and a list of chocolate IDs.
+    """
 
-#=== Baggage Create API ===#
-class BaggageCreateAPIView(APIView):
-    def post(self, request, *args, **kwargs):
-        """
-        Input:
-        {
-            "items": [
-                {"name": "Item1", "cost": 60, "weight": 10},
-                {"name": "Item2", "cost": 100, "weight": 20},
-                {"name": "Item3", "cost": 120, "weight": 30}
-            ],
-            "capacity": 50
-        }
-        """
+    def post(self, request):
         try:
             data = request.data
-            items = data.get("items", [])
-            capacity = data.get("capacity", 0)
+            capacity = data.get("capacity")
+            chocolate_ids = data.get("chocolates")
 
-            # Validate input
-            if not isinstance(items, list) or not isinstance(capacity, int) or capacity <= 0:
+            if not isinstance(capacity, (int, float)) or capacity <= 0:
                 return Response(
-                    base_error_response("Invalid input. 'items' must be a list and 'capacity' must be a positive integer"),
+                    base_error_response("Invalid capacity. Provide a positive number."),
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            for item in items:
-                if not all(key in item for key in ("name", "cost", "weight")):
-                    return Response(
-                        base_error_response("Invalid input. Each item must have 'name', 'cost', and 'weight'"),
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
+            if not isinstance(chocolate_ids, list) or not all(isinstance(id, int) for id in chocolate_ids):
+                return Response(
+                    base_error_response("Invalid chocolate IDs. Provide a list of integers."),
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-            # Call the knapsack utility function
-            max_cost, selected_item_names = knapsack(items, capacity)
+            chocolates = Chocolates.objects.filter(id__in=chocolate_ids)
+            if not chocolates.exists():
+                return Response(
+                    base_error_response("No chocolates found with the provided IDs."),
+                    status=status.HTTP_404_NOT_FOUND
+                )
 
-            # Retrieve full details of the selected items
-            selected_items = [
-                item for item in items if item["name"] in selected_item_names
-            ]
+            items = [(chocolate.weight, chocolate.value, chocolate) for chocolate in chocolates]
+
+            result = self.fractional_knapsack(capacity, items)
+
+            selected_chocolates = []
+            for item in result["selected_items"]:
+                chocolate_data = ChocolatesSerializer(item["chocolate"], context={"request": request}).data
+                selected_chocolates.append({
+                    "chocolate": chocolate_data,
+                    "weight": item["weight"],
+                    "value": item["value"]
+                })
 
             return Response(
-                base_success_response("Cost retrieved successfully", {
-                    "max_cost": max_cost,
-                    "selected_items": selected_items
+                base_success_response("Chocolate retrieved successfully", {
+                    "max_value": result["max_value"],
+                    "selected_items": selected_chocolates
                 }),
+                status=status.HTTP_200_OK
+            )
+
+        except Exception as e:
+            return Response(
+                base_error_response(str(e)),
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    @staticmethod
+    def fractional_knapsack(capacity: float, items: List[Tuple[float, float, object]]) -> dict:
+        """
+        Solves the fractional knapsack problem.
+
+        Args:
+            capacity (float): Maximum weight capacity of the knapsack.
+            items (List[Tuple[float, float, object]]): A list of tuples where each tuple represents
+                an item with its weight, value, and chocolate object (weight, value, chocolate).
+
+        Returns:
+            dict: A response containing the maximum value and the selected items.
+        """
+        if capacity <= 0 or not items:
+            return {"max_value": 0, "selected_items": []}
+
+        # Calculate value per unit weight for each item
+        items_with_ratio = [(weight, value, value / weight, chocolate) for weight, value, chocolate in items]
+
+        # Sort items by value-to-weight ratio in descending order
+        items_with_ratio.sort(key=lambda x: x[2], reverse=True)
+
+        total_value = 0.0
+        selected_items = []
+
+        for weight, value, ratio, chocolate in items_with_ratio:
+            if capacity == 0:
+                break
+
+            if weight <= capacity:
+                # Take the whole item
+                selected_items.append({"weight": weight, "value": value, "chocolate": chocolate})
+                total_value += value
+                capacity -= weight
+            else:
+                # Take a fraction of the item
+                fraction = capacity / weight
+                selected_items.append({"weight": capacity, "value": value * fraction, "chocolate": chocolate})
+                total_value += value * fraction
+                capacity = 0
+
+        return {
+            "max_value": total_value,
+            "selected_items": selected_items
+        }
+
+class ChocolatelistAPIView(APIView):
+    """
+    API view to list all Chocolates from the database.
+    """
+
+    def get(self, request):
+        try:
+            chocolates = Chocolates.objects.all()
+            serializer = ChocolatesSerializer(chocolates, many=True, context={"request": request})
+            return Response(
+                base_success_response("Chocolates retrieved successfully", serializer.data),
                 status=status.HTTP_200_OK
             )
         except Exception as e:
