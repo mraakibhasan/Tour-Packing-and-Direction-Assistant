@@ -9,7 +9,7 @@ const LoveCalculator = () => {
     const getLoveAdvice = (lovePercentage) => {
         const advice = [
             "💔 Relationships have bumps! Diamonds are made under pressure, so take a deep breath, give it time, and laugh through the chaos. You’ll probably make it—as long as you don’t kill each other first! 😅",
-            "😅 Early days? Relax! Relationships are like coffee—they need time to brew. Maybe you’re the universe’s quirky opposites. Embrace the awkwardness, laugh, and just go with it. After all, you’re basically dating a meme!",
+            "😅 Early days? Relax! Relationships are like coffee—they need time to brew. Maybe you're the universe’s quirky opposites. Embrace the awkwardness, laugh, and just go with it. After all, you’re basically dating a meme!",
             "❤️ Starting to click? It’s like IKEA furniture—slow but rewarding. Share shows, memes, and pizza. Don’t overthink it; just enjoy the ride and make room for snacks along the way!",
             "😍 Vibing like PB&J? Time for a shared hobby—knitting, pottery, or even birdwatching. You’ll learn a lot or just laugh at yourselves. Either way, keep that groove going strong!",
             "💖 Feeling solid? Surprise each other—a dance party or a fun scavenger hunt. Keep the spark alive, even if it’s over dishes in the sink. It’s about fun and connection!",
