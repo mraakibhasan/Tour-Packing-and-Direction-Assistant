@@ -77,10 +77,16 @@ class LoginView(APIView):
                         
                 data = {
                     'access_token': access_token,
+                    'refresh_token': str(refresh_token),
                     'user_id': user.id,
                     'username': user.username,
-                    'email': user.email
+                    'email': user.email,
+                    'role': user.role
                 }
+                
+                if data['role'] == 'Student':
+                    data['batch'] = user.batch.name
+                    
                 response = Response(
                     base_success_response('Logged in successfully.', data),
                     status=status.HTTP_200_OK
@@ -94,7 +100,7 @@ class LoginView(APIView):
                         value=str(refresh_token),
                         httponly=True,
                         secure=True, 
-                        samesite='None', 
+                        samesite='None',
                         max_age=cookie_max_age
                     )
                 
@@ -103,7 +109,7 @@ class LoginView(APIView):
                     value=access_token,
                     httponly=True,
                     secure=True, 
-                    samesite='None', 
+                    samesite='None',
                     max_age=cookie_max_age
                 )
 
@@ -131,7 +137,13 @@ class RefreshTokenView(APIView):
     authentication_classes = []
 
     def post(self, request):
-        refresh_token_str = request.COOKIES.get('refresh_token')
+        refresh_token_str = None
+        auth_header = request.headers.get('Authorization')
+        if auth_header and auth_header.startswith('Bearer '):
+            refresh_token_str = auth_header.split(' ')[1]
+
+        if not refresh_token_str:
+            refresh_token_str = request.COOKIES.get('refresh_token')
 
         if refresh_token_str:
             try:
@@ -147,6 +159,7 @@ class RefreshTokenView(APIView):
 
                 data = {
                     'access_token': new_access_token,
+                    'refresh_token': str(new_refresh_token),
                 }
                 
                 response = Response(
@@ -188,7 +201,7 @@ class RefreshTokenView(APIView):
         
         else:
             return Response(
-                base_error_response('Refresh token is required. Not found in cookies.'),
+                base_error_response('Refresh token is required. Not found in cookies or header.'),
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -196,11 +209,17 @@ class RefreshTokenView(APIView):
 class LogoutView(APIView):
     
     def post(self, request):
-        refresh_token = request.COOKIES.get('refresh_token', None)
+        refresh_token_str = None
+        auth_header = request.headers.get('Authorization')
+        if auth_header and auth_header.startswith('Bearer '):
+            refresh_token_str = auth_header.split(' ')[1]
+
+        if not refresh_token_str:
+            refresh_token_str = request.COOKIES.get('refresh_token')
         
-        if refresh_token:
+        if refresh_token_str:
             try:
-                token = RefreshToken(refresh_token)
+                token = RefreshToken(refresh_token_str)
                 token.blacklist()
             except Exception as e:
                 pass

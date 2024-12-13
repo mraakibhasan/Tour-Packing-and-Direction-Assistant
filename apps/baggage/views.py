@@ -3,8 +3,10 @@ from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from django.core.exceptions import ObjectDoesNotExist
 from .models import Chocolates
+from apps.authkit.authentication import CookieJWTAuthentication
 from .serializers import ChocolatesSerializer
 from apps.base.base_response import base_success_response, base_error_response
 
@@ -13,6 +15,9 @@ class KnapsackAPIView(APIView):
     API view to solve the fractional knapsack problem using Chocolates from the database.
     Expects a JSON payload with capacity and a list of chocolate IDs.
     """
+    
+    authentication_classes = [CookieJWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         try:
@@ -49,7 +54,7 @@ class KnapsackAPIView(APIView):
                 selected_chocolates.append({
                     "chocolate": chocolate_data,
                     "weight": item["weight"],
-                    "value": item["value"]
+                    "value": round(item["value"], 2)
                 })
 
             return Response(
@@ -116,6 +121,9 @@ class ChocolatelistAPIView(APIView):
     """
     API view to list all Chocolates from the database.
     """
+    
+    authentication_classes = [CookieJWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         try:

@@ -1,4 +1,4 @@
-### Documentation: Fractional Knapsack API
+### Documentation
 
 #### Overview
 The Fractional Knapsack API is designed to maximize the total value of selected chocolates from the database based on their value-to-weight ratio, ensuring the best combination fits within a given weight capacity. The algorithm allows partial selections when necessary to optimize the result.
@@ -6,6 +6,30 @@ The Fractional Knapsack API is designed to maximize the total value of selected 
 ---
 #### Base URL
 - **Base URL**: `https://tdp.thecodegrammer.net`
+
+---
+
+#### Chocolatelist API
+- **Endpoint**: `GET /api/v1/chocolate-list`
+- **Purpose**: Retrieve all available chocolates from the database.
+- **Response**:
+```json
+{
+    "status": "success",
+    "message": "Chocolates retrieved successfully",
+    "data": [
+        {
+            "id": 1,
+            "name": "Dark Chocolate",
+            "weight": 50.0,
+            "value": 85.0,
+            "ratio": 1.7,
+            "image": "http://127.0.0.1:8000/media/chocolate/dark.webp"
+        },
+        ...
+    ]
+}
+```
 
 #### Knapsack API Details
 - **Endpoint**: `POST /api/v1/chocolate/create`
@@ -137,30 +161,6 @@ ID | Name                  | Weight | Value | Ratio
    - Missing or invalid chocolates.
 2. **Serialization**:
    - Selected chocolates include full metadata (ID, name, weight, value, ratio, image).
-
----
-
-#### Chocolatelist API
-- **Endpoint**: `GET /api/v1/chocolate-list`
-- **Purpose**: Retrieve all available chocolates from the database.
-- **Response**:
-```json
-{
-    "status": "success",
-    "message": "Chocolates retrieved successfully",
-    "data": [
-        {
-            "id": 1,
-            "name": "Dark Chocolate",
-            "weight": 50.0,
-            "value": 85.0,
-            "ratio": 1.7,
-            "image": "http://127.0.0.1:8000/media/chocolate/dark.webp"
-        },
-        ...
-    ]
-}
-```
 
 ---
 
