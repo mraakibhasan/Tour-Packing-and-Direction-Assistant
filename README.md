@@ -4,6 +4,8 @@
 The Fractional Knapsack API is designed to maximize the total value of selected chocolates from the database based on their value-to-weight ratio, ensuring the best combination fits within a given weight capacity. The algorithm allows partial selections when necessary to optimize the result.
 
 ---
+#### Base URL
+- **Base URL**: `https://tdp.thecodegrammer.net`
 
 #### Knapsack API Details
 - **Endpoint**: `POST /api/v1/chocolate/create`
