@@ -3,15 +3,18 @@ import loginImage from "../assets/login.svg";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom"; // Fixing import
+import { Link, useNavigate } from "react-router-dom"; // Fixing import
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "../constant/AxiosInstance";
 import { toast } from "react-toastify";
 import { TailSpin } from "react-loader-spinner";
+import { tr } from "framer-motion/client";
 // Component Start
 // fix 
 const LoginScreen = () => {
   // Yup Validation Schema
+  const navigation  =  useNavigate();
+
   const loginSchema = Yup.object().shape({
     username: Yup.string().required("Please provide a valid username"),
     password: Yup.string()
@@ -42,6 +45,8 @@ const LoginScreen = () => {
         progress: undefined,
         theme: "colored",
       });
+      navigation("/home");
+      localStorage.setItem("is_login" , true)
     },
     onError: (error) => {
       console.error(error);
@@ -156,7 +161,7 @@ const LoginScreen = () => {
               <motion.button
                 type="submit"
                 disabled={isPending} // Disable button while pending
-                className="w-1/2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 hover:shadow-lg transform hover:scale-105 transition-all duration-300 flex justify-center items-center"
+                className="w-1/2 px-6 py-3 bg-[#f56565] text-white font-semibold rounded-lg shadow-md hover:bg-[#f56565] hover:shadow-lg transform hover:scale-105 transition-all duration-300 flex justify-center items-center"
               >
                 {isPending ? (
                   <TailSpin
@@ -175,7 +180,7 @@ const LoginScreen = () => {
 
         <p className="mt-2 text-sm">
           Don't have an account?{" "}
-          <Link className="text-blue-600 font-semibold" to="/register">
+          <Link className="text-[#f56565] font-semibold" to="/register">
             Sign Up
           </Link>
         </p>

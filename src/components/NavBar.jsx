@@ -16,12 +16,12 @@ const NavBar = () => {
 
   const rightNavLink = [
     {
-      title: "Log In",
-      link: "/login/",
+      title: "DashBoard",
+      link: "/home",
     },
     {
-      title: "Sign Up",
-      link: "/register/",
+      title: "Logout",
+      link: "/",
     },
   ];
 
