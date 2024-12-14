@@ -41,8 +41,8 @@ const NavBar = () => {
       </div>
 
       <div className="flex-1 text-center relative h-full flex items-center justify-center">
-        <div className="text-2xl font-bold text-red-400">
-          <span className="text-black">MY</span>DATE
+        <div className="text-2xl font-black text-red-400">
+          <span className="text-black">MY</span>VALENTINE
         </div>
       </div>
 
