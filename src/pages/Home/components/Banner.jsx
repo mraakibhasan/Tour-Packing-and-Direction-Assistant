@@ -1,6 +1,6 @@
 import React from 'react';
-import bannerImg from '../../../assets/banner-pic.png' //
-import cloud from '../../../assets/pink-cloud.webp' //
+import bannerImg from '../../../assets/banner-pic.png';
+import cloud from '../../../assets/pink-cloud.webp';
 import { Link } from 'react-router-dom';
 
 const Banner = () => {
@@ -17,9 +17,11 @@ const Banner = () => {
             <div className="bg-white flex flex-col items-center px-4 sm:px-6 lg:px-8">
                 <div className="max-w-2xl space-y-6 text-center">
                     <div>
-                        <h2 className="mt-6 text-5xl font-bold text-gray-900">Find Your <span className='text-red-400'>Real Connections</span></h2>
+                        <h2 className="mt-6 text-5xl font-bold text-gray-900">
+                            Find Your <span className='text-red-400 font-cursive'>Real Connections</span>
+                        </h2>
                         <p className="mt-2 text-center text-sm text-gray-600">
-                            We committed to helping singles find love every day and we are confident in our ability to do
+                            We are committed to helping singles find love every day and we are confident in our ability to do
                             so. eharmony matches single women and men for lasting and fulfilling relationships.
                         </p>
                     </div>
