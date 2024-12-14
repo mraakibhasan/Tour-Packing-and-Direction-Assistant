@@ -165,7 +165,7 @@ const Chocolate = () => {
           <div className="mt-auto">
             <button
               onClick={handleBestSelection}
-              className="w-full bg-red-400 text-white py-2 rounded-lg hover:bg-red-600"
+              className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700"
             >
               Make the best out of them
             </button>
@@ -177,7 +177,7 @@ const Chocolate = () => {
       {modalData && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg w-3/4 max-w-lg">
-            <h2 className="text-2xl font-bold mb-4 text-center">Success!</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center">Let's see what you pick! 😏</h2>
             <p className="text-lg mb-4">{modalData.message}</p>
             <div className="grid grid-cols-2 gap-4">
               {modalData.selected_items.map((item, index) => (
@@ -194,10 +194,10 @@ const Chocolate = () => {
               ))}
             </div>
             <button
-              className="mt-4 w-full bg-green-500 text-white py-2 rounded-lg"
+              className="mt-4 w-full bg-red-500 text-white py-2 rounded-lg"
               onClick={() => setModalData(null)}
             >
-              Close
+              Proceed
             </button>
           </div>
         </div>
